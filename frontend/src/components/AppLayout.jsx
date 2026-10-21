@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import MobileTabBar from './MobileTabBar';
 import CommandPalette from './CommandPalette';
+import TransactionDrawer from './TransactionDrawer';
 import './AppLayout.css';
 
 export default function AppLayout() {
@@ -58,6 +59,9 @@ export default function AppLayout() {
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
       />
+
+      {/* Slide-over Add/Edit transaction drawer */}
+      <TransactionDrawer />
     </div>
   );
 }

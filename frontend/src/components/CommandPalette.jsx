@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useTransactionDrawer } from '../context/TransactionDrawerContext';
 import './CommandPalette.css';
 
 export default function CommandPalette({ isOpen, onClose }) {
@@ -24,6 +25,7 @@ export default function CommandPalette({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { toggleTheme, isDark } = useTheme();
   const { logout } = useAuth();
+  const { openDrawer } = useTransactionDrawer();
 
   // All available palette commands
   const allActions = [
@@ -67,7 +69,7 @@ export default function CommandPalette({ isOpen, onClose }) {
       label: 'Add a new transaction',
       icon: Plus,
       category: 'Actions',
-      run: () => navigate('/transactions?add=true'),
+      run: () => openDrawer(null, 'manual'),
     },
     {
       id: 'theme',

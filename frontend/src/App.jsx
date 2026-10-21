@@ -3,6 +3,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { TransactionDrawerProvider } from './context/TransactionDrawerContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
 
@@ -19,8 +21,10 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
+        <ToastProvider>
+          <TransactionDrawerProvider>
+            <BrowserRouter>
+              <Routes>
             {/* Public authentication routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -45,6 +49,8 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+          </TransactionDrawerProvider>
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   );

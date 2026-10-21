@@ -9,6 +9,7 @@ const {
   updateTransaction,
   deleteTransaction,
   parseSmsMessage,
+  getTransactionSummary,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
@@ -20,6 +21,9 @@ router.use(protect);
 
 // POST   /api/transactions/parse-sms — parse bank SMS without saving
 router.post('/parse-sms', parseSmsMessage);
+
+// GET    /api/transactions/summary   — aggregate monthly totals (placed before /:id)
+router.get('/summary', getTransactionSummary);
 
 // POST   /api/transactions        — add a new transaction
 router.post('/', createTransaction);

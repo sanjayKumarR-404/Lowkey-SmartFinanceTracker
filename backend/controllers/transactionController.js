@@ -110,6 +110,17 @@ const getTransactions = async (req, res, next) => {
       filter.date = { $gte: startOfMonth, $lte: endOfMonth };
     }
 
+    // --- Optional filter: search (matches merchant or note, case-insensitive) ---
+    // We escape special regex characters to prevent regex injection or crashes
+    if (req.query.search && req.query.search.trim()) {
+      const safeSearch = req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(safeSearch, 'i');
+      filter.$or = [
+        { merchant: searchRegex },
+        { note: searchRegex },
+      ];
+    }
+
     // --- Pagination ---
     // page=1 means the first page, limit=20 means 20 results per page
     const page = parseInt(req.query.page, 10) || 1;
@@ -256,10 +267,70 @@ const parseSmsMessage = async (req, res, next) => {
   }
 };
 
+// ---------------------------------------------------------------
+// GET /api/transactions/summary — Aggregate income, expense, and net for a month
+// Uses MongoDB aggregation framework to compute totals in the database
+// ---------------------------------------------------------------
+const getTransactionSummary = async (req, res, next) => {
+  try {
+    const now = new Date();
+    // Default to current month and year if not specified in query params
+    const month = parseInt(req.query.month, 10) || (now.getMonth() + 1);
+    const year = parseInt(req.query.year, 10) || now.getFullYear();
+
+    // Build the date boundaries for the given month
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+    // Run aggregation to calculate totals grouped by transaction type ('income' or 'expense')
+    const summary = await Transaction.aggregate([
+      {
+        $match: {
+          user: req.user._id,
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        },
+      },
+      {
+        $group: {
+          _id: '$type',
+          total: { $sum: '$amount' },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    let income = 0;
+    let expense = 0;
+    let count = 0;
+
+    summary.forEach((item) => {
+      count += item.count;
+      if (item._id === 'income') {
+        income = item.total;
+      } else if (item._id === 'expense') {
+        expense = item.total;
+      }
+    });
+
+    const net = income - expense;
+
+    res.status(200).json({
+      success: true,
+      income,
+      expense,
+      net,
+      count,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createTransaction,
   getTransactions,
   updateTransaction,
   deleteTransaction,
   parseSmsMessage,
+  getTransactionSummary,
 };

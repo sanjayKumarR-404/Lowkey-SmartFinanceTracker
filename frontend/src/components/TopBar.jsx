@@ -3,6 +3,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Plus, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useTransactionDrawer } from '../context/TransactionDrawerContext';
 import './TopBar.css';
 
 const TITLES = {
@@ -17,6 +18,7 @@ export default function TopBar({ onOpenCommandPalette }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleTheme, isDark } = useTheme();
+  const { openDrawer } = useTransactionDrawer();
 
   const title = TITLES[location.pathname] || 'Lowkey';
 
@@ -53,7 +55,7 @@ export default function TopBar({ onOpenCommandPalette }) {
 
         <button
           type="button"
-          onClick={() => navigate('/transactions?add=true')}
+          onClick={() => openDrawer(null, 'manual')}
           className="btn-primary"
         >
           <Plus size={16} />
