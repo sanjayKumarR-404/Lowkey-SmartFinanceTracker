@@ -4,9 +4,6 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ArrowLeftRight,
-  PieChart,
-  CalendarSync,
-  FileInput,
   Sun,
   Moon,
   LogOut,
@@ -15,12 +12,10 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import './Sidebar.css';
 
+// Only show pages that are fully built
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
-  { to: '/budgets', label: 'Budgets', icon: PieChart },
-  { to: '/recurring', label: 'Recurring', icon: CalendarSync },
-  { to: '/import', label: 'Import', icon: FileInput },
 ];
 
 export default function Sidebar() {

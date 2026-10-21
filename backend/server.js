@@ -19,6 +19,7 @@ const connectDB = require('./config/db');
 const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -46,6 +47,7 @@ app.use(express.json());
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);           // register, login, getMe
 app.use('/api/transactions', transactionRoutes); // create, list, update, delete
+app.use('/api/analytics', analyticsRoutes);      // dashboard overview
 
 // --- Error Handling ---
 // notFound must come AFTER all routes — it catches anything that didn't match

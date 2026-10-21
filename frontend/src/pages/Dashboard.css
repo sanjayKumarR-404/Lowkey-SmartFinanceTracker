@@ -1,0 +1,498 @@
+﻿/* Dashboard.css — Bento grid layout and card styles for the overview page */
+
+/* ── Page wrapper ───────────────────────────────────────────────────────── */
+.dashboard-container {
+  max-width: 1200px;
+  padding: 0 var(--space-6);
+  margin: 0 auto;
+}
+
+/* ── Top Header: month switcher + title ─────────────────────────────────── */
+.dash-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.dash-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Month switcher — same style as Transactions page */
+.dash-month-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px 8px;
+}
+
+.dash-month-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+.dash-month-btn:hover { color: var(--primary); background: var(--primary-tint); }
+
+.dash-month-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 130px;
+  text-align: center;
+}
+
+/* ── Bento Grid ─────────────────────────────────────────────────────────── */
+/* 12-column desktop; 2-column tablet; 1-column phone */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-4);
+}
+
+/* Full 12-column row */
+.bento-hero    { grid-column: span 12; }
+/* 7 + 5 split */
+.bento-cashflow   { grid-column: span 7; }
+.bento-category   { grid-column: span 5; }
+/* 4 + 4 + 4 split */
+.bento-review     { grid-column: span 4; }
+.bento-merchants  { grid-column: span 4; }
+.bento-recent     { grid-column: span 4; }
+
+@media (max-width: 1024px) {
+  /* Tablet: 2-column */
+  .bento-hero       { grid-column: span 2; }
+  .bento-cashflow   { grid-column: span 2; }
+  .bento-category   { grid-column: span 2; }
+  .bento-review     { grid-column: span 1; }
+  .bento-merchants  { grid-column: span 1; }
+  .bento-recent     { grid-column: span 2; }
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-hero, .bento-cashflow, .bento-category,
+  .bento-review, .bento-merchants, .bento-recent {
+    grid-column: span 1;
+  }
+  .dashboard-container { padding: 0 var(--space-4); }
+}
+
+/* ── Card base ──────────────────────────────────────────────────────────── */
+.dash-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 160px;
+}
+
+.dash-card-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+/* ── Hero card ──────────────────────────────────────────────────────────── */
+.hero-card {
+  flex-direction: row;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  min-height: 140px;
+}
+
+.hero-left {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.hero-net-amount {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+.hero-net-amount.positive { color: var(--income); }
+.hero-net-amount.negative { color: var(--expense); }
+
+.hero-comparison {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-comparison .up { color: var(--income); }
+.hero-comparison .down { color: var(--expense); }
+
+.hero-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.hero-stat-value.income { color: var(--income); }
+.hero-stat-value.expense { color: var(--expense); }
+.hero-stat-value.saved { color: var(--primary); }
+
+/* divider between stat items */
+.hero-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+}
+
+/* ── Cash flow card (bar chart) ─────────────────────────────────────────── */
+.cashflow-chart-wrap {
+  flex: 1;
+}
+
+/* ── Category donut card ────────────────────────────────────────────────── */
+.category-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.donut-and-legend {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.donut-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.donut-center-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.donut-center-label .center-amount {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.donut-center-label .center-sub {
+  font-size: 0.65rem;
+  color: var(--text-subtle);
+  margin-top: 2px;
+}
+
+.donut-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 3px 4px;
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+.legend-item:hover,
+.legend-item.highlighted { background: var(--bg-muted); }
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legend-pct {
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.legend-amt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── Month in review card ───────────────────────────────────────────────── */
+.review-text {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  flex: 1;
+}
+.review-text strong { color: var(--text-primary); }
+
+/* ── Top merchants card ─────────────────────────────────────────────────── */
+.merchant-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.merchant-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.merchant-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.merchant-rank {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-subtle);
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.merchant-name {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchant-amount {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.merchant-bar-track {
+  height: 3px;
+  background: var(--bg-muted);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.merchant-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--primary);
+  opacity: 0.7;
+  transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── Recent transactions card ───────────────────────────────────────────── */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 7px 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.12s;
+}
+.recent-row:hover { background: var(--bg-muted); }
+
+.recent-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recent-info { flex: 1; overflow: hidden; }
+.recent-merchant {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recent-date {
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+}
+
+.recent-amount {
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.recent-amount.income { color: var(--income); }
+.recent-amount.expense { color: var(--expense); }
+
+.recent-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 4px 2px 0;
+  transition: opacity 0.15s;
+  margin-top: auto;
+}
+.recent-view-all:hover { opacity: 0.7; }
+
+/* ── Skeleton shimmer ───────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skel {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--bg-muted) 25%, var(--border) 50%, var(--bg-muted) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+.skel-h1  { height: 56px; width: 50%; }
+.skel-h2  { height: 28px; width: 35%; }
+.skel-h3  { height: 20px; width: 60%; }
+.skel-p   { height: 14px; width: 100%; }
+.skel-p.short { width: 70%; }
+.skel-chart { height: 120px; width: 100%; border-radius: 8px; }
+.skel-circle { width: 120px; height: 120px; border-radius: 50%; }
+.skel-bar { height: 3px; width: 100%; }
+
+/* ── Empty state (designed, not bare) ──────────────────────────────────── */
+.dash-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--bg-surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  gap: var(--space-4);
+  min-height: 320px;
+}
+
+.dash-empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--primary-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.dash-empty h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+.dash-empty p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 360px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Error state ───────────────────────────────────────────────────────── */
+.dash-error {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  gap: var(--space-3);
+  min-height: 200px;
+}
+.dash-error h3 { margin: 0; }
+.dash-error p  { color: var(--text-muted); font-size: 0.88rem; margin: 0; }

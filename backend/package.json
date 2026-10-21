@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test:sms": "node tests/runSmsTests.js"
+    "test:sms": "node tests/runSmsTests.js",
+    "seed:demo": "node scripts/seedDemoData.js"
   },
   "keywords": [],
   "author": "",
