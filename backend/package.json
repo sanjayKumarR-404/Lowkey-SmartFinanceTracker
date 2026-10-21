@@ -1,0 +1,25 @@
+{
+  "name": "lowkey-backend",
+  "version": "1.0.0",
+  "description": "Lowkey Smart Finance Tracker — Express/Node.js backend",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "mongoose": "^9.11.2",
+    "morgan": "^1.12.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
