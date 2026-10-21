@@ -1,0 +1,254 @@
+[
+  {
+    "id": 1,
+    "bank": "HDFC",
+    "message": "HDFC Bank: Rs. 1,250.00 debited from A/c **4321 on 21-10-26 to SWIGGY. Avl Bal: Rs. 45,210.50.",
+    "expected": { "type": "expense", "amount": 1250, "merchant": "SWIGGY" }
+  },
+  {
+    "id": 2,
+    "bank": "HDFC",
+    "message": "Alert: Rs 450.00 spent on HDFC Bank Card ending 9876 at STARBUCKS on 21-Oct-26. Avl limit: Rs 75,000.",
+    "expected": { "type": "expense", "amount": 450, "merchant": "STARBUCKS" }
+  },
+  {
+    "id": 3,
+    "bank": "HDFC",
+    "message": "HDFC Bank: Rs. 25,000.00 credited to A/c **4321 on 21-10-26 by Salary. Avl Bal: Rs. 70,210.50.",
+    "expected": { "type": "income", "amount": 25000, "merchant": "Salary" }
+  },
+  {
+    "id": 4,
+    "bank": "HDFC",
+    "message": "Rs. 320.00 debited from HDFC Bank A/c 4321 towards Uber on 20-Oct-26. Avl Bal Rs. 69,890.50.",
+    "expected": { "type": "expense", "amount": 320, "merchant": "Uber" }
+  },
+  {
+    "id": 5,
+    "bank": "HDFC",
+    "message": "Refund of Rs 299.00 credited to your HDFC Bank A/C **4321 on 19-10-26 from Zomato. Avl Bal Rs 70,189.50.",
+    "expected": { "type": "income", "amount": 299, "merchant": "Zomato" }
+  },
+  {
+    "id": 6,
+    "bank": "HDFC",
+    "message": "HDFC Bank: Rs.500/- debited from A/c **4321 on 21-10-26 to BookMyShow. Avl Bal: Rs. 69,689.50.",
+    "expected": { "type": "expense", "amount": 500, "merchant": "BookMyShow" }
+  },
+  {
+    "id": 7,
+    "bank": "SBI",
+    "message": "Dear SBI User, your A/C ending in 5678 debited by Rs 500 on 21/10/2026 transfer to Rahul Sharma Ref No 628192. Avl Bal Rs 12,430.",
+    "expected": { "type": "expense", "amount": 500, "merchant": "Rahul Sharma" }
+  },
+  {
+    "id": 8,
+    "bank": "SBI",
+    "message": "Your A/C XX5678 is debited for INR 1,500.00 on 20Oct26 towards Amazon India. Avl Bal: INR 10,930.00.",
+    "expected": { "type": "expense", "amount": 1500, "merchant": "Amazon India" }
+  },
+  {
+    "id": 9,
+    "bank": "SBI",
+    "message": "Your A/C XX5678 credited by Rs. 2,000.00 on 19-10-26 by transfer from Ramesh Kumar. Avl Bal Rs 14,430.",
+    "expected": { "type": "income", "amount": 2000, "merchant": "Ramesh Kumar" }
+  },
+  {
+    "id": 10,
+    "bank": "SBI",
+    "message": "SBI: Rs 3,000.00 withdrawn at ATM from A/C XX5678 on 18-10-26. Available balance Rs 11,430.",
+    "expected": { "type": "expense", "amount": 3000, "merchant": null }
+  },
+  {
+    "id": 11,
+    "bank": "SBI",
+    "message": "INR 250 spent on SBI Card XX1234 at CCD on 21-10-26. Avl limit: INR 45,000.",
+    "expected": { "type": "expense", "amount": 250, "merchant": "CCD" }
+  },
+  {
+    "id": 12,
+    "bank": "SBI",
+    "message": "Dear SBI Customer, Rs 120 paid to Chai Point on 21/10/26 via UPI. Bal Rs 11,310.",
+    "expected": { "type": "expense", "amount": 120, "merchant": "Chai Point" }
+  },
+  {
+    "id": 13,
+    "bank": "ICICI",
+    "message": "Dear Customer, your ICICI Bank Acct XX3456 is debited for Rs 899.00 on 21-10-26. Info: Netflix. Available Balance is Rs 34,500.25.",
+    "expected": { "type": "expense", "amount": 899, "merchant": "Netflix" }
+  },
+  {
+    "id": 14,
+    "bank": "ICICI",
+    "message": "Acct XX3456 debited with INR 2,499.00 on 20-Oct-26 at Zara Store. Avl Bal: INR 32,001.25.",
+    "expected": { "type": "expense", "amount": 2499, "merchant": "Zara Store" }
+  },
+  {
+    "id": 15,
+    "bank": "ICICI",
+    "message": "Dear Customer, your Acct XX3456 has been credited with Rs 5,000.00 on 18-10-26. Info: NEFT XYZ Corp. Total Bal: Rs 37,001.25.",
+    "expected": { "type": "income", "amount": 5000, "merchant": "NEFT XYZ Corp" }
+  },
+  {
+    "id": 16,
+    "bank": "ICICI",
+    "message": "Rs. 180.00 spent on ICICI Bank Card ending 6789 at Dominos Pizza on 17-Oct-26. Avl limit: Rs 55,000.",
+    "expected": { "type": "expense", "amount": 180, "merchant": "Dominos Pizza" }
+  },
+  {
+    "id": 17,
+    "bank": "ICICI",
+    "message": "Dear Customer, Acct XX3456 debited for Rs. 1,100 on 21-10-26 to VPA airtel@icici. Available Balance: Rs 35,901.25.",
+    "expected": { "type": "expense", "amount": 1100, "merchant": "airtel" }
+  },
+  {
+    "id": 18,
+    "bank": "ICICI",
+    "message": "Cashback of Rs 50 credited to your ICICI Bank A/C XX3456 on 20-10-26. Total Bal: Rs 35,951.25.",
+    "expected": { "type": "income", "amount": 50, "merchant": null }
+  },
+  {
+    "id": 19,
+    "bank": "Axis",
+    "message": "Rs. 350.00 debited from Axis Bank A/c no. XX7890 on 21-10-26 towards Uber India. Available balance: INR 18,250.00.",
+    "expected": { "type": "expense", "amount": 350, "merchant": "Uber India" }
+  },
+  {
+    "id": 20,
+    "bank": "Axis",
+    "message": "You have paid Rs 120 at Chai Point using Axis Bank UPI on 21/10/26. Bal: Rs 18,130.",
+    "expected": { "type": "expense", "amount": 120, "merchant": "Chai Point" }
+  },
+  {
+    "id": 21,
+    "bank": "Axis",
+    "message": "Axis Bank A/C XX7890 has received a credit of INR 10,000 on 15-Oct-26 from Mom. Avl Bal: INR 28,130.",
+    "expected": { "type": "income", "amount": 10000, "merchant": "Mom" }
+  },
+  {
+    "id": 22,
+    "bank": "Axis",
+    "message": "INR 4,200.00 spent on Axis Bank Credit Card XX4455 at Croma on 19-10-26. Avl limit: INR 40,000.",
+    "expected": { "type": "expense", "amount": 4200, "merchant": "Croma" }
+  },
+  {
+    "id": 23,
+    "bank": "Axis",
+    "message": "Axis Bank: Rs. 600 debited from A/C XX7890 on 21-10-26 to Blinkit. Avl Bal: Rs 27,530.",
+    "expected": { "type": "expense", "amount": 600, "merchant": "Blinkit" }
+  },
+  {
+    "id": 24,
+    "bank": "Kotak",
+    "message": "Kotak Bank: Rs 650.00 withdrawn from A/c XX2345 at ATM on 21-10-26. Bal: Rs 8,900.00.",
+    "expected": { "type": "expense", "amount": 650, "merchant": null }
+  },
+  {
+    "id": 25,
+    "bank": "Kotak",
+    "message": "Kotak Bank: Paid Rs 2,100 to Flipkart on 20-10-26 from A/c ending 2345. Bal: Rs 6,800.00.",
+    "expected": { "type": "expense", "amount": 2100, "merchant": "Flipkart" }
+  },
+  {
+    "id": 26,
+    "bank": "Kotak",
+    "message": "Kotak Bank: Rs 1,500.00 deposited in A/c XX2345 on 19-Oct-26. Available balance Rs 8,300.00.",
+    "expected": { "type": "income", "amount": 1500, "merchant": null }
+  },
+  {
+    "id": 27,
+    "bank": "Kotak",
+    "message": "Rs. 750 spent on Kotak Debit Card XX2345 at McDonald's on 21-10-26. Avl Bal Rs 6,050.",
+    "expected": { "type": "expense", "amount": 750, "merchant": "McDonald's" }
+  },
+  {
+    "id": 28,
+    "bank": "Kotak",
+    "message": "Kotak Bank: Rs. 90.00 debited from A/c XX2345 on 21-10-26 to Metro Ticket. Bal: Rs 5,960.00.",
+    "expected": { "type": "expense", "amount": 90, "merchant": "Metro Ticket" }
+  },
+  {
+    "id": 29,
+    "bank": "Paytm/UPI",
+    "message": "Paid ₹500 to Swiggy on Paytm UPI. Ref: UPI/234567/swiggy@icici on 21-10-26.",
+    "expected": { "type": "expense", "amount": 500, "merchant": "Swiggy" }
+  },
+  {
+    "id": 30,
+    "bank": "Paytm/UPI",
+    "message": "Money Sent: ₹1,000 sent to Priya Patel from SBI A/c XX5678 on 21/10/2026. UPI Ref 382910.",
+    "expected": { "type": "expense", "amount": 1000, "merchant": "Priya Patel" }
+  },
+  {
+    "id": 31,
+    "bank": "Paytm/UPI",
+    "message": "Rs.500/- debited via UPI from A/c ending 1122 on 21-10-26 to tea stall. Avl bal Rs 3200.",
+    "expected": { "type": "expense", "amount": 500, "merchant": "tea stall" }
+  },
+  {
+    "id": 32,
+    "bank": "Paytm/UPI",
+    "message": "Received ₹750 from Amit via Google Pay on 21-10-26. A/C XX1234.",
+    "expected": { "type": "income", "amount": 750, "merchant": "Amit" }
+  },
+  {
+    "id": 33,
+    "bank": "Paytm/UPI",
+    "message": "Refund of Rs 399.00 received for order #1234 from Myntra in your A/C XX4321 on 21-Oct-26.",
+    "expected": { "type": "income", "amount": 399, "merchant": "Myntra" }
+  },
+  {
+    "id": 34,
+    "bank": "Paytm/UPI",
+    "message": "₹240 paid to Apollo Pharmacy using PhonePe on 21-10-26 from HDFC A/c XX4321.",
+    "expected": { "type": "expense", "amount": 240, "merchant": "Apollo Pharmacy" }
+  },
+  {
+    "id": 35,
+    "bank": "Generic",
+    "message": "Purchase of INR 3,450.00 at Decathlon on 21-10-26 debited from Card ending 5555. Avl limit: INR 20,000.",
+    "expected": { "type": "expense", "amount": 3450, "merchant": "Decathlon" }
+  },
+  {
+    "id": 36,
+    "bank": "SBI",
+    "message": "Your OTP for login to SBI NetBanking is 482910. Do not share with anyone.",
+    "expected": null
+  },
+  {
+    "id": 37,
+    "bank": "HDFC",
+    "message": "123456 is the OTP for your transaction of INR 1,500.00 at Amazon. Valid for 10 mins. Do not disclose.",
+    "expected": null
+  },
+  {
+    "id": 38,
+    "bank": "ICICI",
+    "message": "Congratulations! You are pre-approved for a personal loan of Rs. 5,00,000. Apply now at https://icicibank.com/loan",
+    "expected": null
+  },
+  {
+    "id": 39,
+    "bank": "Kotak",
+    "message": "Special offer: Get 20% cashback on your next purchase of Rs 500 or more with Kotak Credit Card. Use code FESTIVE.",
+    "expected": null
+  },
+  {
+    "id": 40,
+    "bank": "HDFC",
+    "message": "Your available balance in A/C XX4321 as of 21-Oct-26 is Rs. 45,210.50.",
+    "expected": null
+  },
+  {
+    "id": 41,
+    "bank": "Axis",
+    "message": "Dear Customer, the total balance for account ending 7890 is INR 18,250.00 as on 21-Oct-26.",
+    "expected": null
+  },
+  {
+    "id": 42,
+    "bank": "Airtel",
+    "message": "Bill reminder: Your Airtel postpaid bill of Rs 799 is due on 25-Oct-26. Pay before due date to avoid late fee.",
+    "expected": null
+  }
+]

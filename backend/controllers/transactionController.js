@@ -2,6 +2,7 @@
 // CRUD = Create, Read, Update, Delete — the four basic database operations
 
 const Transaction = require('../models/Transaction');
+const { parseSms } = require('../utils/smsParser');
 
 // ---------------------------------------------------------------
 // Helper: validate fields that come in from the request body
@@ -216,4 +217,49 @@ const deleteTransaction = async (req, res, next) => {
   }
 };
 
-module.exports = { createTransaction, getTransactions, updateTransaction, deleteTransaction };
+// ---------------------------------------------------------------
+// POST /api/transactions/parse-sms — Parse bank SMS text without saving
+// Takes { text } in request body, parses financial fields, returns parsed data
+// ---------------------------------------------------------------
+const parseSmsMessage = async (req, res, next) => {
+  try {
+    const { text } = req.body;
+
+    // Validate that text is provided and is a non-empty string
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide the SMS text to parse.',
+      });
+    }
+
+    // Call our parser utility
+    const parsed = parseSms(text);
+
+    // If the SMS is not a transaction (e.g. OTP, promotional offer, balance check)
+    // we return 422 Unprocessable Entity
+    if (!parsed) {
+      return res.status(422).json({
+        success: false,
+        message: 'Could not parse SMS as a financial transaction. Make sure it is a valid bank debit/credit message.',
+      });
+    }
+
+    // Success: return parsed details without saving to the database
+    // The user can review/edit these fields in the frontend before confirming
+    res.status(200).json({
+      success: true,
+      data: parsed,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createTransaction,
+  getTransactions,
+  updateTransaction,
+  deleteTransaction,
+  parseSmsMessage,
+};

@@ -8,6 +8,7 @@ const {
   getTransactions,
   updateTransaction,
   deleteTransaction,
+  parseSmsMessage,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
@@ -16,6 +17,9 @@ const router = express.Router();
 // This means every request must carry a valid JWT — no exceptions
 // It's cleaner than writing "protect," in every single route line below
 router.use(protect);
+
+// POST   /api/transactions/parse-sms — parse bank SMS without saving
+router.post('/parse-sms', parseSmsMessage);
 
 // POST   /api/transactions        — add a new transaction
 router.post('/', createTransaction);
