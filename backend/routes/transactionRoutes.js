@@ -10,6 +10,8 @@ const {
   deleteTransaction,
   parseSmsMessage,
   getTransactionSummary,
+  suggestCategory,
+  recategorizeTransactions,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
@@ -24,6 +26,12 @@ router.post('/parse-sms', parseSmsMessage);
 
 // GET    /api/transactions/summary   — aggregate monthly totals (placed before /:id)
 router.get('/summary', getTransactionSummary);
+
+// GET    /api/transactions/suggest-category — suggest category from rules or keywords (placed before /:id)
+router.get('/suggest-category', suggestCategory);
+
+// POST   /api/transactions/recategorize — bulk update category by merchant (placed before /:id)
+router.post('/recategorize', recategorizeTransactions);
 
 // POST   /api/transactions        — add a new transaction
 router.post('/', createTransaction);

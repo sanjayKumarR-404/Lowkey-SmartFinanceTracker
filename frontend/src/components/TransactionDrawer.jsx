@@ -5,7 +5,7 @@ import { X, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 import { useTransactionDrawer } from '../context/TransactionDrawerContext';
 import { useToast } from '../context/ToastContext';
 import { CATEGORIES } from '../constants/categories';
-import { createTransaction, updateTransaction, parseSms } from '../services/transactionService';
+import { createTransaction, updateTransaction, parseSms, suggestCategory, recategorizeTransactions } from '../services/transactionService';
 import './TransactionDrawer.css';
 
 export default function TransactionDrawer() {
@@ -20,6 +20,8 @@ export default function TransactionDrawer() {
   const [amount, setAmount] = useState('');
   const [merchant, setMerchant] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0].name);
+  const [categoryHint, setCategoryHint] = useState('');
+  const [userManuallySelectedCategory, setUserManuallySelectedCategory] = useState(false);
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState({});
@@ -46,6 +48,8 @@ export default function TransactionDrawer() {
             : new Date().toISOString().split('T')[0]
         );
         setNote(editingTransaction.note || '');
+        setUserManuallySelectedCategory(true);
+        setCategoryHint('');
       } else {
         setActiveTab(initialTab || 'manual');
         setType('expense');
@@ -54,6 +58,8 @@ export default function TransactionDrawer() {
         setCategory(CATEGORIES[0].name);
         setDate(new Date().toISOString().split('T')[0]);
         setNote('');
+        setUserManuallySelectedCategory(false);
+        setCategoryHint('');
       }
       setErrors({});
       setSmsText('');
@@ -61,6 +67,40 @@ export default function TransactionDrawer() {
       setParsedData(null);
     }
   }, [isOpen, editingTransaction, initialTab]);
+
+  // Debounced auto-categorization when user types a merchant in manual create mode (400ms)
+  useEffect(() => {
+    if (!isOpen || editingTransaction || activeTab !== 'manual') return;
+    if (userManuallySelectedCategory) return;
+
+    const trimmed = merchant.trim();
+    if (!trimmed) {
+      setCategoryHint('');
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await suggestCategory({ merchant: trimmed, type });
+        if (res && res.success && res.category) {
+          if (!userManuallySelectedCategory) {
+            setCategory(res.category);
+            if (res.reason === 'your earlier choice') {
+              setCategoryHint('Suggested from your earlier choice');
+            } else if (res.reason === 'keyword match') {
+              setCategoryHint('Suggested from the merchant name');
+            } else {
+              setCategoryHint('');
+            }
+          }
+        }
+      } catch (err) {
+        // Silently ignore suggest errors
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [merchant, type, userManuallySelectedCategory, editingTransaction, isOpen, activeTab]);
 
   // Close on Escape key
   useEffect(() => {
@@ -105,8 +145,41 @@ export default function TransactionDrawer() {
       };
 
       if (editingTransaction) {
-        await updateTransaction(editingTransaction._id, payload);
-        showToast({ message: 'Transaction updated', type: 'success' });
+        const res = await updateTransaction(editingTransaction._id, payload);
+        const similarCount = res?.similarCount || 0;
+        const merchantName = payload.merchant;
+        const targetCategory = payload.category;
+
+        if (similarCount > 0 && merchantName) {
+          showToast({
+            message: `Also move ${similarCount} other ${merchantName} transaction${similarCount === 1 ? '' : 's'} to ${targetCategory}?`,
+            type: 'info',
+            duration: 8000,
+            action: {
+              label: 'Apply',
+              onClick: async () => {
+                try {
+                  await recategorizeTransactions({
+                    merchant: merchantName,
+                    category: targetCategory,
+                  });
+                  showToast({
+                    message: `Moved ${similarCount} other transaction${similarCount === 1 ? '' : 's'} to ${targetCategory}`,
+                    type: 'success',
+                  });
+                  triggerRefresh();
+                } catch (err) {
+                  showToast({
+                    message: 'Could not update related transactions.',
+                    type: 'error',
+                  });
+                }
+              },
+            },
+          });
+        } else {
+          showToast({ message: 'Transaction updated', type: 'success' });
+        }
       } else {
         await createTransaction(payload);
         showToast({ message: 'Transaction recorded', type: 'success' });
@@ -136,11 +209,20 @@ export default function TransactionDrawer() {
 
       const res = await parseSms(smsText.trim());
       if (res.data) {
+        const suggestedCat = res.data.suggestedCategory || CATEGORIES[0].name;
+        let hint = '';
+        if (res.data.reason === 'your earlier choice') {
+          hint = 'Suggested from your earlier choice';
+        } else if (res.data.reason === 'keyword match') {
+          hint = 'Suggested from the merchant name';
+        }
+
         setParsedData({
           type: res.data.type || 'expense',
           amount: res.data.amount || '',
           merchant: res.data.merchant || '',
-          category: CATEGORIES[0].name,
+          category: suggestedCat,
+          categoryHint: hint,
           date: res.data.date
             ? new Date(res.data.date).toISOString().split('T')[0]
             : new Date().toISOString().split('T')[0],
@@ -309,7 +391,11 @@ export default function TransactionDrawer() {
                 id="tx-category"
                 className="drawer-select"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setUserManuallySelectedCategory(true);
+                  setCategoryHint('');
+                }}
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat.name} value={cat.name}>
@@ -317,6 +403,11 @@ export default function TransactionDrawer() {
                   </option>
                 ))}
               </select>
+              {categoryHint && (
+                <div className="drawer-suggestion-hint">
+                  {categoryHint}
+                </div>
+              )}
             </div>
 
             {/* Date Field */}
@@ -459,7 +550,7 @@ export default function TransactionDrawer() {
                     className="drawer-select"
                     value={parsedData.category}
                     onChange={(e) =>
-                      setParsedData((p) => ({ ...p, category: e.target.value }))
+                      setParsedData((p) => ({ ...p, category: e.target.value, categoryHint: '' }))
                     }
                   >
                     {CATEGORIES.map((cat) => (
@@ -468,6 +559,11 @@ export default function TransactionDrawer() {
                       </option>
                     ))}
                   </select>
+                  {parsedData.categoryHint && (
+                    <div className="drawer-suggestion-hint">
+                      {parsedData.categoryHint}
+                    </div>
+                  )}
                 </div>
 
                 <div className="drawer-form-group">

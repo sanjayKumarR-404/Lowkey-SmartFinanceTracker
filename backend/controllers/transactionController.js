@@ -2,7 +2,39 @@
 // CRUD = Create, Read, Update, Delete — the four basic database operations
 
 const Transaction = require('../models/Transaction');
+const CategoryRule = require('../models/CategoryRule');
 const { parseSms } = require('../utils/smsParser');
+const { categorize, ALLOWED_CATEGORIES } = require('../utils/categorizer');
+
+// ---------------------------------------------------------------
+// Helper: escape special regex characters
+// ---------------------------------------------------------------
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// ---------------------------------------------------------------
+// Helper: resolve category for a user
+// Priority:
+// 1. The logged-in user's saved CategoryRule for that merchantKey ("your earlier choice")
+// 2. Keyword-based categorizer ("keyword match")
+// 3. Fallback: "Other" ("default")
+// ---------------------------------------------------------------
+const resolveCategoryForUser = async (userId, { merchant = '', note = '', type = 'expense' }) => {
+  const trimmedMerchant = (merchant || '').trim();
+  if (trimmedMerchant) {
+    const merchantKey = trimmedMerchant.toLowerCase();
+    const rule = await CategoryRule.findOne({ user: userId, merchantKey });
+    if (rule && rule.category) {
+      return { category: rule.category, reason: 'your earlier choice' };
+    }
+  }
+
+  const kwCategory = categorize({ merchant: trimmedMerchant, note, type });
+  if (kwCategory && kwCategory !== 'Other') {
+    return { category: kwCategory, reason: 'keyword match' };
+  }
+
+  return { category: 'Other', reason: 'default' };
+};
 
 // ---------------------------------------------------------------
 // Helper: validate fields that come in from the request body
@@ -56,6 +88,18 @@ const createTransaction = async (req, res, next) => {
       return res.status(400).json({ success: false, message: validationError });
     }
 
+    // Category auto-resolution if missing, empty or "Uncategorized"
+    let finalCategory = category;
+    if (
+      !finalCategory ||
+      typeof finalCategory !== 'string' ||
+      finalCategory.trim() === '' ||
+      finalCategory.trim() === 'Uncategorized'
+    ) {
+      const resolved = await resolveCategoryForUser(req.user._id, { merchant, note, type });
+      finalCategory = resolved.category;
+    }
+
     // req.user._id comes from the authMiddleware — it's the logged-in user's ID
     // We always attach the user from the token, never from the request body,
     // so a user cannot create transactions pretending to be someone else
@@ -63,7 +107,7 @@ const createTransaction = async (req, res, next) => {
       user: req.user._id,
       type,
       amount: Number(amount),
-      category: category || 'Uncategorized',
+      category: finalCategory,
       merchant,
       note,
       date: date ? new Date(date) : Date.now(),
@@ -180,6 +224,8 @@ const updateTransaction = async (req, res, next) => {
       return res.status(400).json({ success: false, message: validationError });
     }
 
+    const oldCategory = transaction.category;
+
     // Pull only the fields we allow to be updated (user and source cannot be changed)
     const { type, amount, category, merchant, note, date } = req.body;
 
@@ -195,7 +241,36 @@ const updateTransaction = async (req, res, next) => {
     // Save runs Mongoose validators again, so invalid data is caught here too
     const updated = await transaction.save();
 
-    res.status(200).json({ success: true, transaction: updated });
+    let similarCount = 0;
+    // Learning: when a transaction is updated and its category changed and it has a merchant,
+    // save or update the user's CategoryRule for that merchant.
+    // Include in the update response the number of OTHER transactions of this user with
+    // the same merchant but a different category, as similarCount.
+    if (
+      category !== undefined &&
+      category.trim() !== oldCategory &&
+      updated.merchant &&
+      updated.merchant.trim()
+    ) {
+      const merchantTrimmed = updated.merchant.trim();
+      const merchantKey = merchantTrimmed.toLowerCase();
+
+      await CategoryRule.findOneAndUpdate(
+        { user: req.user._id, merchantKey },
+        { category: category.trim() },
+        { upsert: true, new: true }
+      );
+
+      const escaped = escapeRegex(merchantTrimmed);
+      similarCount = await Transaction.countDocuments({
+        user: req.user._id,
+        _id: { $ne: updated._id },
+        merchant: { $regex: new RegExp(`^${escaped}$`, 'i') },
+        category: { $ne: category.trim() },
+      });
+    }
+
+    res.status(200).json({ success: true, transaction: updated, similarCount });
   } catch (error) {
     next(error);
   }
@@ -231,6 +306,7 @@ const deleteTransaction = async (req, res, next) => {
 // ---------------------------------------------------------------
 // POST /api/transactions/parse-sms — Parse bank SMS text without saving
 // Takes { text } in request body, parses financial fields, returns parsed data
+// Also returns suggestedCategory and reason based on user rules or keywords
 // ---------------------------------------------------------------
 const parseSmsMessage = async (req, res, next) => {
   try {
@@ -256,11 +332,102 @@ const parseSmsMessage = async (req, res, next) => {
       });
     }
 
-    // Success: return parsed details without saving to the database
-    // The user can review/edit these fields in the frontend before confirming
+    // Suggest category according to user's saved rule -> categorizer -> Other
+    const resolved = await resolveCategoryForUser(req.user._id, {
+      merchant: parsed.merchant,
+      note: '',
+      type: parsed.type,
+    });
+
+    // Success: return parsed details including suggested category
     res.status(200).json({
       success: true,
-      data: parsed,
+      data: {
+        ...parsed,
+        suggestedCategory: resolved.category,
+        reason: resolved.reason,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------------
+// GET /api/transactions/suggest-category?merchant=...
+// Returns { category, reason } where reason is:
+// "your earlier choice" | "keyword match" | "default"
+// ---------------------------------------------------------------
+const suggestCategory = async (req, res, next) => {
+  try {
+    const merchant = req.query.merchant || '';
+    const note = req.query.note || '';
+    const type = req.query.type || 'expense';
+
+    const resolved = await resolveCategoryForUser(req.user._id, { merchant, note, type });
+
+    res.status(200).json({
+      success: true,
+      category: resolved.category,
+      reason: resolved.reason,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------------
+// POST /api/transactions/recategorize with { merchant, category }
+// Sets the category on all of the logged-in user's transactions with that merchant
+// (case-insensitive exact match) and returns how many changed.
+// Validates the category against the allowed list.
+// ---------------------------------------------------------------
+const recategorizeTransactions = async (req, res, next) => {
+  try {
+    const { merchant, category } = req.body;
+
+    if (!merchant || typeof merchant !== 'string' || !merchant.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a merchant name.',
+      });
+    }
+
+    if (!category || typeof category !== 'string' || !ALLOWED_CATEGORIES.includes(category.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid category. Must be one of: ${ALLOWED_CATEGORIES.join(', ')}.`,
+      });
+    }
+
+    const trimmedMerchant = merchant.trim();
+    const trimmedCategory = category.trim();
+    const escaped = escapeRegex(trimmedMerchant);
+
+    // Save or update user's CategoryRule
+    await CategoryRule.findOneAndUpdate(
+      { user: req.user._id, merchantKey: trimmedMerchant.toLowerCase() },
+      { category: trimmedCategory },
+      { upsert: true, new: true }
+    );
+
+    // Update all transactions of this user with matching merchant (case-insensitive)
+    const result = await Transaction.updateMany(
+      {
+        user: req.user._id,
+        merchant: { $regex: new RegExp(`^${escaped}$`, 'i') },
+      },
+      {
+        $set: { category: trimmedCategory },
+      }
+    );
+
+    const updatedCount = result.modifiedCount ?? result.nModified ?? 0;
+
+    res.status(200).json({
+      success: true,
+      updatedCount,
+      message: `Updated ${updatedCount} transaction${updatedCount === 1 ? '' : 's'}.`,
     });
   } catch (error) {
     next(error);
@@ -333,4 +500,7 @@ module.exports = {
   deleteTransaction,
   parseSmsMessage,
   getTransactionSummary,
+  suggestCategory,
+  recategorizeTransactions,
 };
+

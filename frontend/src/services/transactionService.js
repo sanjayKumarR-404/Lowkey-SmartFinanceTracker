@@ -55,3 +55,22 @@ export async function parseSms(text) {
   const response = await api.post('/transactions/parse-sms', { text });
   return response.data;
 }
+
+/**
+ * Suggest a category for a merchant name.
+ * @param {object} params - { merchant, note, type }
+ */
+export async function suggestCategory(params = {}) {
+  const response = await api.get('/transactions/suggest-category', { params });
+  return response.data;
+}
+
+/**
+ * Bulk recategorize all transactions for a given merchant.
+ * @param {object} data - { merchant, category }
+ */
+export async function recategorizeTransactions(data) {
+  const response = await api.post('/transactions/recategorize', data);
+  return response.data;
+}
+

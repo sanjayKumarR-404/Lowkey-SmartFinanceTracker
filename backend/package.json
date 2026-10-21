@@ -7,6 +7,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test:sms": "node tests/runSmsTests.js",
+    "test:category": "node tests/categoryTests.js",
     "seed:demo": "node scripts/seedDemoData.js"
   },
   "keywords": [],
