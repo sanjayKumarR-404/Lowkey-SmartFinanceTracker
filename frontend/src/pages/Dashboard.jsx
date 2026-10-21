@@ -1,4 +1,4 @@
-﻿// pages/Dashboard.jsx — Full bento-grid dashboard with 6 cards
+// pages/Dashboard.jsx — Full bento-grid dashboard with 6 cards
 // Uses the /api/analytics/overview endpoint and matches the Transactions page visual style.
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,10 @@ import {
   ChevronLeft, ChevronRight, TrendingUp, TrendingDown,
   ArrowRight, LayoutDashboard, AlertCircle, RotateCw, Plus,
 } from 'lucide-react';
+import { format, differenceInCalendarDays } from 'date-fns';
 import { getOverview } from '../services/analyticsService';
+import { getBudgets } from '../services/budgetService';
+import { getUpcoming, getRecurring } from '../services/recurringService';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getCategoryByName } from '../constants/categories';
 import { useTransactionDrawer } from '../context/TransactionDrawerContext';
@@ -101,6 +104,9 @@ export default function Dashboard() {
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [data, setData] = useState(null);
+  const [budgetsData, setBudgetsData] = useState(null);
+  const [upcomingData, setUpcomingData] = useState([]);
+  const [recurringTotal, setRecurringTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -114,8 +120,16 @@ export default function Dashboard() {
     try {
       setLoading(true);
       setError(null);
-      const result = await getOverview(month, year);
+      const [result, bRes, uRes, rRes] = await Promise.all([
+        getOverview(month, year),
+        getBudgets({ month, year }).catch(() => null),
+        getUpcoming({ days: 30 }).catch(() => ({ upcoming: [] })),
+        getRecurring().catch(() => ({ recurring: [], monthlyTotal: 0 })),
+      ]);
       setData(result);
+      if (bRes) setBudgetsData(bRes);
+      if (uRes?.upcoming) setUpcomingData(uRes.upcoming);
+      if (rRes?.monthlyTotal !== undefined) setRecurringTotal(rRes.monthlyTotal);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load dashboard.');
     } finally {
@@ -183,6 +197,21 @@ export default function Dashboard() {
                 {[1,2,3,4].map(n => <div key={n} className="skel skel-p" />)}
               </div>
             </div>
+          </SkeletonCard>
+          <SkeletonCard className="bento-budgets">
+            <div className="skel skel-p" style={{ width: '40%' }} />
+            {[1, 2, 3].map((n) => (
+              <div key={n} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className="skel skel-p" />
+                <div className="skel skel-bar" />
+              </div>
+            ))}
+          </SkeletonCard>
+          <SkeletonCard className="bento-upcoming">
+            <div className="skel skel-p" style={{ width: '40%' }} />
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="skel skel-p" />
+            ))}
           </SkeletonCard>
           <SkeletonCard className="bento-review">
             <div className="skel skel-p" style={{ width: '40%' }} />
@@ -262,13 +291,19 @@ export default function Dashboard() {
             setHoveredCat={setHoveredCat}
           />
 
-          {/* ── CARD 4: Month in review ───────────────────────────────── */}
+          {/* ── CARD 4: Budgets ───────────────────────────────────────── */}
+          <BudgetsCard budgets={budgetsData?.budgets || []} />
+
+          {/* ── CARD 5: Upcoming payments ─────────────────────────────── */}
+          <UpcomingCard upcoming={upcomingData} monthlyTotal={recurringTotal} />
+
+          {/* ── CARD 6: Month in review ───────────────────────────────── */}
           <ReviewCard data={data} monthName={MONTH_NAMES[currentDate.getMonth()]} />
 
-          {/* ── CARD 5: Top merchants ─────────────────────────────────── */}
+          {/* ── CARD 7: Top merchants ─────────────────────────────────── */}
           <MerchantsCard merchants={data.topMerchants} />
 
-          {/* ── CARD 6: Recent transactions ───────────────────────────── */}
+          {/* ── CARD 8: Recent transactions ───────────────────────────── */}
           <RecentCard transactions={data.recent} openDrawer={openDrawer} />
         </div>
       )}
@@ -600,3 +635,190 @@ function RecentCard({ transactions }) {
     </div>
   );
 }
+
+/* Budgets card: top 3 categories closest to or over their limit */
+function BudgetsCard({ budgets }) {
+  if (!budgets || budgets.length === 0) {
+    return (
+      <div className="dash-card bento-budgets">
+        <div className="dash-card-header">
+          <span className="dash-card-label">Budgets</span>
+          <Link to="/budgets" className="dash-card-link">
+            View all <ArrowRight size={13} />
+          </Link>
+        </div>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 'auto 0' }}>
+          No monthly budgets set yet.
+        </p>
+        <Link to="/budgets" className="recent-view-all">
+          Set a budget <ArrowRight size={13} />
+        </Link>
+      </div>
+    );
+  }
+
+  const topBudgets = budgets.slice(0, 3);
+
+  return (
+    <div className="dash-card bento-budgets">
+      <div className="dash-card-header">
+        <span className="dash-card-label">Budgets</span>
+        <Link to="/budgets" className="dash-card-link">
+          View all <ArrowRight size={13} />
+        </Link>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, marginTop: 4 }}>
+        {topBudgets.map((b) => {
+          const cat = getCategoryByName(b.category);
+          const CatIcon = cat.icon;
+          const statusClass = b.status || (b.percent > 100 ? 'over' : b.percent >= 80 ? 'near' : 'ok');
+          const statusLabel =
+            statusClass === 'over'
+              ? `Over by ${formatCurrency(b.spent - b.limit)}`
+              : statusClass === 'near'
+              ? 'Near limit'
+              : `${b.percent}%`;
+
+          return (
+            <div key={b._id || b.category} className="dash-budget-item">
+              <div className="dash-budget-top">
+                <div className="dash-budget-cat">
+                  <div
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 'var(--radius-sm)',
+                      background: `${cat.color}18`,
+                      color: cat.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <CatIcon size={12} />
+                  </div>
+                  <span>{b.category}</span>
+                </div>
+                <div className="dash-budget-meta">
+                  <span>{formatCurrency(b.spent)} / {formatCurrency(b.limit)}</span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      color:
+                        statusClass === 'over'
+                          ? 'var(--expense)'
+                          : statusClass === 'near'
+                          ? 'var(--accent)'
+                          : 'var(--text-subtle)',
+                    }}
+                  >
+                    {statusLabel}
+                  </span>
+                </div>
+              </div>
+              <div className="dash-budget-bar">
+                <div
+                  className={`dash-budget-fill ${statusClass}`}
+                  style={{ width: `${Math.min(b.percent, 100)}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <Link to="/budgets" className="recent-view-all">
+        View all <ArrowRight size={13} />
+      </Link>
+    </div>
+  );
+}
+
+/* Upcoming payments card: next 4 upcoming items and monthly total */
+function UpcomingCard({ upcoming, monthlyTotal }) {
+  if (!upcoming || upcoming.length === 0) {
+    return (
+      <div className="dash-card bento-upcoming">
+        <div className="dash-card-header">
+          <span className="dash-card-label">Upcoming payments</span>
+          <Link to="/recurring" className="dash-card-link">
+            View all <ArrowRight size={13} />
+          </Link>
+        </div>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 'auto 0' }}>
+          No recurring payments scheduled.
+        </p>
+        <Link to="/recurring" className="recent-view-all">
+          Manage recurring <ArrowRight size={13} />
+        </Link>
+      </div>
+    );
+  }
+
+  const items = upcoming.slice(0, 4);
+
+  return (
+    <div className="dash-card bento-upcoming">
+      <div className="dash-card-header">
+        <div>
+          <span className="dash-card-label">Upcoming payments</span>
+          {monthlyTotal > 0 && (
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', marginTop: 2 }}>
+              {formatCurrency(monthlyTotal)} / month estimated
+            </div>
+          )}
+        </div>
+        <Link to="/recurring" className="dash-card-link">
+          View all <ArrowRight size={13} />
+        </Link>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, marginTop: 4 }}>
+        {items.map((item, idx) => {
+          const cat = getCategoryByName(item.category);
+          const CatIcon = cat.icon;
+          const isIncome = item.type === 'income';
+
+          const itemDate = new Date(item.date);
+          const diffDays = differenceInCalendarDays(itemDate, new Date());
+          let dateStr = format(itemDate, 'dd MMM');
+          if (diffDays === 0) dateStr = 'Today';
+          else if (diffDays === 1) dateStr = 'Tomorrow';
+          else if (diffDays > 1 && diffDays <= 7) dateStr = `in ${diffDays} days`;
+
+          return (
+            <div key={item.recurringId ? `${item.recurringId}-${idx}` : idx} className="dash-upcoming-item">
+              <div className="dash-upcoming-left">
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 'var(--radius-sm)',
+                    background: `${cat.color}18`,
+                    color: cat.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <CatIcon size={13} />
+                </div>
+                <div className="dash-upcoming-details">
+                  <span className="dash-upcoming-name">{item.name}</span>
+                  <span className="dash-upcoming-date">{dateStr}</span>
+                </div>
+              </div>
+              <span className={`dash-upcoming-amount ${isIncome ? 'income' : 'expense'}`}>
+                {isIncome ? '+' : ''}{formatCurrency(item.amount)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <Link to="/recurring" className="recent-view-all">
+        View all <ArrowRight size={13} />
+      </Link>
+    </div>
+  );
+}
+

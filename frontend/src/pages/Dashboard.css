@@ -1,4 +1,4 @@
-﻿/* Dashboard.css — Bento grid layout and card styles for the overview page */
+/* Dashboard.css — Bento grid layout and card styles for the overview page */
 
 /* ── Page wrapper ───────────────────────────────────────────────────────── */
 .dashboard-container {
@@ -69,6 +69,9 @@
 /* 7 + 5 split */
 .bento-cashflow   { grid-column: span 7; }
 .bento-category   { grid-column: span 5; }
+/* 6 + 6 split */
+.bento-budgets    { grid-column: span 6; }
+.bento-upcoming   { grid-column: span 6; }
 /* 4 + 4 + 4 split */
 .bento-review     { grid-column: span 4; }
 .bento-merchants  { grid-column: span 4; }
@@ -79,6 +82,8 @@
   .bento-hero       { grid-column: span 2; }
   .bento-cashflow   { grid-column: span 2; }
   .bento-category   { grid-column: span 2; }
+  .bento-budgets    { grid-column: span 1; }
+  .bento-upcoming   { grid-column: span 1; }
   .bento-review     { grid-column: span 1; }
   .bento-merchants  { grid-column: span 1; }
   .bento-recent     { grid-column: span 2; }
@@ -88,6 +93,7 @@
 @media (max-width: 640px) {
   .bento-grid { grid-template-columns: 1fr; }
   .bento-hero, .bento-cashflow, .bento-category,
+  .bento-budgets, .bento-upcoming,
   .bento-review, .bento-merchants, .bento-recent {
     grid-column: span 1;
   }
@@ -496,3 +502,126 @@
 }
 .dash-error h3 { margin: 0; }
 .dash-error p  { color: var(--text-muted); font-size: 0.88rem; margin: 0; }
+
+/* ── Budgets & Upcoming Bento Cards ─────────────────────────────────────── */
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-card-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.dash-card-link:hover {
+  opacity: 0.8;
+}
+
+.dash-budget-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-budget-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dash-budget-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.dash-budget-cat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.dash-budget-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.dash-upcoming-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-upcoming-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dash-upcoming-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-upcoming-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dash-upcoming-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.dash-upcoming-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dash-upcoming-amount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dash-upcoming-amount.income {
+  color: var(--income);
+}
+
+.dash-budget-bar {
+  height: 4px;
+  background: var(--bg-muted);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.dash-budget-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.dash-budget-fill.ok { background: var(--income); }
+.dash-budget-fill.near { background: var(--accent); }
+.dash-budget-fill.over { background: var(--expense); }
+

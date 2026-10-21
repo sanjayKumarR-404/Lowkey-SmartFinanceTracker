@@ -1,0 +1,422 @@
+/* Budgets.css — Styling for Monthly Budgets page and drawer */
+
+.budgets-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* ── Top Header ──────────────────────────────────────────────────────────── */
+.budgets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.budgets-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Month switcher */
+.budgets-month-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px 8px;
+}
+
+.budgets-month-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.budgets-month-btn:hover {
+  color: var(--primary);
+  background-color: var(--primary-soft);
+}
+
+.budgets-month-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  min-width: 130px;
+  text-align: center;
+}
+
+/* ── Warning Strip ──────────────────────────────────────────────────────── */
+.budgets-warning-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background-color: var(--expense-soft);
+  border: 1px solid var(--expense);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: var(--space-6);
+  color: var(--expense);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.budgets-warning-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.budgets-warning-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Summary Card ────────────────────────────────────────────────────────── */
+.budgets-summary-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.budgets-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-5);
+}
+
+.budgets-summary-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.budgets-stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.budgets-stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.budgets-stat-value.ok {
+  color: var(--income);
+}
+
+.budgets-stat-value.near {
+  color: var(--accent);
+}
+
+.budgets-stat-value.over {
+  color: var(--expense);
+}
+
+/* Overall Progress Bar */
+.budgets-overall-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.budgets-overall-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: var(--bg-sidebar);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease-out;
+}
+
+.progress-fill.ok {
+  background-color: var(--income);
+}
+
+.progress-fill.near {
+  background-color: var(--accent);
+}
+
+.progress-fill.over {
+  background-color: var(--expense);
+}
+
+/* ── Category List Rows ──────────────────────────────────────────────────── */
+.budgets-list-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: var(--space-4);
+}
+
+.budgets-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.budget-row-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.budget-row-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.budget-cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.budget-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.budget-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.budget-cat-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.budget-numbers-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.budget-spent-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.budget-limit-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.budget-percent-badge {
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.budget-percent-badge.ok {
+  background-color: var(--income-soft);
+  color: var(--income);
+}
+
+.budget-percent-badge.near {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.budget-percent-badge.over {
+  background-color: var(--expense-soft);
+  color: var(--expense);
+}
+
+.budget-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.budget-row-bar-container {
+  flex: 1;
+}
+
+.budget-status-text {
+  font-size: 0.775rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.budget-status-text.ok {
+  color: var(--income);
+}
+
+.budget-status-text.near {
+  color: var(--accent);
+}
+
+.budget-status-text.over {
+  color: var(--expense);
+}
+
+.budget-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.budget-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.budget-action-btn:hover {
+  color: var(--text-main);
+  background-color: var(--bg-surface-hover);
+}
+
+.budget-action-btn.delete:hover {
+  color: var(--expense);
+  background-color: var(--expense-soft);
+}
+
+/* ── Suggestions Modal ───────────────────────────────────────────────────── */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.suggestion-checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.suggestion-cat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.suggestion-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 4px 8px;
+  width: 120px;
+}
+
+.suggestion-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  outline: none;
+}
+
+/* ── Responsive rules ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .budgets-page {
+    padding: 0 var(--space-4);
+  }
+
+  .budgets-summary-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .budget-row-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .budgets-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .budgets-header-actions {
+    justify-content: space-between;
+  }
+}

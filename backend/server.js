@@ -20,6 +20,8 @@ const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const budgetRoutes = require('./routes/budgetRoutes');
+const recurringRoutes = require('./routes/recurringRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -48,6 +50,8 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);           // register, login, getMe
 app.use('/api/transactions', transactionRoutes); // create, list, update, delete
 app.use('/api/analytics', analyticsRoutes);      // dashboard overview
+app.use('/api/budgets', budgetRoutes);          // category monthly budgets
+app.use('/api/recurring', recurringRoutes);      // recurring payments & reminders
 
 // --- Error Handling ---
 // notFound must come AFTER all routes — it catches anything that didn't match

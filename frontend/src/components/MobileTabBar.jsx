@@ -4,13 +4,17 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ArrowLeftRight,
+  PieChart,
+  CalendarSync,
 } from 'lucide-react';
 import './MobileTabBar.css';
 
-// Only show pages that are fully built
+// Short labels for mobile tab bar
 const TABS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/transactions', label: 'History', icon: ArrowLeftRight },
+  { to: '/budgets', label: 'Budgets', icon: PieChart },
+  { to: '/recurring', label: 'Recurring', icon: CalendarSync },
 ];
 
 export default function MobileTabBar() {

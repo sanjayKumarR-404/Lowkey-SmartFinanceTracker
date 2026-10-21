@@ -1,4 +1,4 @@
-﻿// scripts/seedDemoData.js — Generates ~120 realistic demo transactions for testing the Dashboard.
+// scripts/seedDemoData.js — Generates ~120 realistic demo transactions for testing the Dashboard.
 // Run with: npm run seed:demo -- someone@email.com
 // Options:   --reset  deletes that user's demo transactions first (safe to re-run)
 //
@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
+const Budget = require('../models/Budget');
 const User = require('../models/User');
 
 // --- Parse CLI arguments ---
@@ -28,6 +29,16 @@ if (!email) {
   console.error('Usage: npm run seed:demo -- someone@email.com [--reset]');
   process.exit(1);
 }
+
+// 6 sensible demo budgets for Indian living expenses
+const DEMO_BUDGETS = [
+  { category: 'Food & dining', amount: 5000 },
+  { category: 'Groceries', amount: 6500 },
+  { category: 'Transport', amount: 2500 },
+  { category: 'Shopping', amount: 4000 },
+  { category: 'Bills & utilities', amount: 3000 },
+  { category: 'Entertainment', amount: 2000 },
+];
 
 // --- Merchant pools by category (realistic Indian names) ---
 const merchantsByCategory = {
@@ -184,15 +195,38 @@ async function main() {
   }
   console.log(`Found user: ${user.name} (${user.email})`);
 
-  // --reset: delete only this user's demo transactions first
+  // --reset: delete only this user's demo transactions and budgets first
   if (shouldReset) {
-    const deleted = await Transaction.deleteMany({ user: user._id, note: 'demo data' });
-    console.log(`Removed ${deleted.deletedCount} existing demo transactions.`);
+    const deletedTxns = await Transaction.deleteMany({ user: user._id, note: 'demo data' });
+    console.log(`Removed ${deletedTxns.deletedCount} existing demo transactions.`);
+
+    const deletedBudgets = await Budget.deleteMany({ user: user._id });
+    console.log(`Removed ${deletedBudgets.deletedCount} existing budgets.`);
   }
 
   const txns = buildTransactions(user._id);
   await Transaction.insertMany(txns);
   console.log(`Inserted ${txns.length} demo transactions for ${user.email}.`);
+
+  // After creating transactions, also create budgets for 6 sensible categories (skip any that already exist)
+  const existingBudgets = await Budget.find({ user: user._id });
+  const existingCatSet = new Set(existingBudgets.map((b) => b.category));
+  const budgetsToInsert = [];
+
+  for (const b of DEMO_BUDGETS) {
+    if (!existingCatSet.has(b.category)) {
+      budgetsToInsert.push({
+        user: user._id,
+        category: b.category,
+        amount: b.amount,
+      });
+    }
+  }
+
+  if (budgetsToInsert.length > 0) {
+    await Budget.insertMany(budgetsToInsert);
+    console.log(`Inserted ${budgetsToInsert.length} demo budgets for ${user.email}.`);
+  }
 
   await mongoose.disconnect();
   console.log('Done. MongoDB disconnected.');
