@@ -1,0 +1,11 @@
+Date,Description,Type,Amount,Category,Note
+2026-10-02,Swiggy,expense,420,Food & dining,Dinner order
+2026-10-04,BigBasket,expense,1850,Groceries,Weekly groceries
+2026-10-06,Uber,expense,285,Transport,Cab ride
+2026-10-08,Netflix,expense,649,Subscriptions,Monthly subscription
+2026-10-10,BESCOM,expense,1240,Bills & utilities,Electricity bill
+2026-10-12,BookMyShow,expense,750,Entertainment,Movie ticket
+2026-10-15,Salary,income,52000,Salary,October salary
+2026-10-17,Amazon,expense,2399,Shopping,Household purchase
+2026-10-19,Apollo Pharmacy,expense,540,Health,Pharmacy
+2026-10-20,IRCTC,expense,1280,Travel,Train ticket

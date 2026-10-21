@@ -2,6 +2,8 @@
 // Scans transaction history (last 12 months) to discover subscriptions, rent, bills, or salary.
 // No machine learning — uses deterministic heuristics: grouping, median tolerance, and date cadence.
 
+const { advanceMonthly, isLastDayOfMonth } = require('./recurrenceDates');
+
 /**
  * Calculates the median of an array of numbers.
  */
@@ -43,12 +45,14 @@ function advanceNextDate(baseDate, frequency) {
   now.setHours(0, 0, 0, 0);
 
   let next = new Date(baseDate);
+  const anchorDay = next.getDate();
+  const anchorMonthEnd = isLastDayOfMonth(next);
 
   // Initial step forward from the last seen transaction
   if (frequency === 'weekly') {
     next.setDate(next.getDate() + 7);
   } else if (frequency === 'monthly') {
-    next.setMonth(next.getMonth() + 1);
+    next = advanceMonthly(next, anchorDay, anchorMonthEnd);
   } else if (frequency === 'yearly') {
     next.setFullYear(next.getFullYear() + 1);
   }
@@ -58,7 +62,7 @@ function advanceNextDate(baseDate, frequency) {
     if (frequency === 'weekly') {
       next.setDate(next.getDate() + 7);
     } else if (frequency === 'monthly') {
-      next.setMonth(next.getMonth() + 1);
+      next = advanceMonthly(next, anchorDay, anchorMonthEnd);
     } else if (frequency === 'yearly') {
       next.setFullYear(next.getFullYear() + 1);
     }

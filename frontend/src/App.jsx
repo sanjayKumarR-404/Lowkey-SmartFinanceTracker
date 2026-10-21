@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Recurring from './pages/Recurring';
+import Import from './pages/Import';
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="transactions" element={<Transactions />} />
               <Route path="budgets" element={<Budgets />} />
               <Route path="recurring" element={<Recurring />} />
+              <Route path="import" element={<Import />} />
             </Route>
 
             {/* Catch-all redirect to dashboard */}

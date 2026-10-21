@@ -2,6 +2,7 @@
 const Recurring = require('../models/Recurring');
 const Transaction = require('../models/Transaction');
 const { detectRecurring } = require('../utils/recurringDetector');
+const { advanceMonthly, isLastDayOfMonth } = require('../utils/recurrenceDates');
 
 // ---------------------------------------------------------------
 // GET /api/recurring — List all active and paused recurring reminders
@@ -64,13 +65,15 @@ const getUpcoming = async (req, res, next) => {
 
     activeItems.forEach((item) => {
       let current = new Date(item.nextDate);
+      const anchorDay = current.getDate();
+      const anchorMonthEnd = isLastDayOfMonth(current);
 
       // Roll forward if nextDate stored in DB is older than today
       while (current < start) {
         if (item.frequency === 'weekly') {
           current.setDate(current.getDate() + 7);
         } else if (item.frequency === 'monthly') {
-          current.setMonth(current.getMonth() + 1);
+          current = advanceMonthly(current, anchorDay, anchorMonthEnd);
         } else if (item.frequency === 'yearly') {
           current.setFullYear(current.getFullYear() + 1);
         }
@@ -93,8 +96,7 @@ const getUpcoming = async (req, res, next) => {
           current = new Date(current);
           current.setDate(current.getDate() + 7);
         } else if (item.frequency === 'monthly') {
-          current = new Date(current);
-          current.setMonth(current.getMonth() + 1);
+          current = advanceMonthly(current, anchorDay, anchorMonthEnd);
         } else if (item.frequency === 'yearly') {
           current = new Date(current);
           current.setFullYear(current.getFullYear() + 1);

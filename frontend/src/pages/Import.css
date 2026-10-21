@@ -1,0 +1,38 @@
+.import-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-8);
+}
+
+.import-header { margin-bottom: var(--space-6); }
+.import-title-row { display: flex; align-items: center; gap: var(--space-3); color: var(--primary); }
+.import-title-row h1 { margin: 0; color: var(--text-main); font-family: var(--font-heading); font-size: 1.75rem; font-weight: 500; }
+.import-header p, .import-upload p, .import-preview-header p { margin: var(--space-2) 0 0; color: var(--text-muted); }
+.import-upload { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); }
+.import-upload > div:nth-child(2) { flex: 1; min-width: 0; }
+.import-upload h2, .import-preview h2 { margin: 0; color: var(--text-main); font-size: 1rem; font-weight: 600; }
+.import-upload p { font-size: 0.875rem; line-height: 1.5; }
+.import-upload-icon { display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; border-radius: var(--radius-sm); background: var(--primary-soft); color: var(--primary); }
+.import-file-name { display: inline-block; margin-top: var(--space-2); color: var(--text-main); font-size: 0.82rem; }
+.import-select-button, .import-submit-button { padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--text-main); font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+.import-submit-button { border-color: var(--primary); background: var(--primary); color: var(--primary-contrast); }
+.import-submit-button:disabled { cursor: not-allowed; opacity: 0.6; }
+.import-message { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-4); padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.875rem; }
+.import-message.error { border-color: var(--expense); background: var(--expense-soft); color: var(--expense); }
+.import-message.success, .import-ready { color: var(--income); }
+.import-preview { margin-top: var(--space-6); }
+.import-preview-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
+.import-preview-header p { font-size: 0.85rem; }
+.import-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); }
+.import-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+.import-table th, .import-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.import-table th { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; }
+.import-table td { color: var(--text-main); }
+.import-table tbody tr:last-child td { border-bottom: 0; }
+.import-ready { display: inline-flex; align-items: center; gap: 5px; }
+
+@media (max-width: 640px) {
+  .import-page { padding-right: var(--space-4); padding-left: var(--space-4); }
+  .import-upload { align-items: flex-start; flex-wrap: wrap; }
+  .import-select-button { margin-left: 60px; }
+}

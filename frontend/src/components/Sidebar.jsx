@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   PieChart,
   CalendarSync,
+  FileInput,
   Sun,
   Moon,
   LogOut,
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { to: '/budgets', label: 'Budgets', icon: PieChart },
   { to: '/recurring', label: 'Recurring', icon: CalendarSync },
+  { to: '/import', label: 'Import', icon: FileInput },
 ];
 
 export default function Sidebar() {

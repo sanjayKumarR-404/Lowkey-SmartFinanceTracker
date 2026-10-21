@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   PieChart,
   CalendarSync,
+  FileInput,
 } from 'lucide-react';
 import './MobileTabBar.css';
 
@@ -15,6 +16,7 @@ const TABS = [
   { to: '/transactions', label: 'History', icon: ArrowLeftRight },
   { to: '/budgets', label: 'Budgets', icon: PieChart },
   { to: '/recurring', label: 'Recurring', icon: CalendarSync },
+  { to: '/import', label: 'Import', icon: FileInput },
 ];
 
 export default function MobileTabBar() {
