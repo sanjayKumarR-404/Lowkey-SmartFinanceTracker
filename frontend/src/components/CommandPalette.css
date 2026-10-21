@@ -1,0 +1,119 @@
+/* CommandPalette.css */
+.palette-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(18, 23, 21, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.palette-dialog {
+  width: 100%;
+  max-width: 540px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-search-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.palette-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.palette-input::placeholder {
+  color: var(--text-subtle);
+}
+
+.palette-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.palette-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.palette-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.palette-item-icon {
+  color: var(--text-muted);
+  width: 16px;
+  height: 16px;
+}
+
+.palette-item.active,
+.palette-item:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--primary);
+}
+
+.palette-item.active .palette-item-icon,
+.palette-item:hover .palette-item-icon {
+  color: var(--primary);
+}
+
+.palette-item-badge {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+}
+
+.palette-empty {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.palette-footer {
+  padding: 8px var(--space-5);
+  background-color: var(--bg-sidebar);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+}
+
+.palette-shortcuts {
+  display: flex;
+  gap: var(--space-3);
+}

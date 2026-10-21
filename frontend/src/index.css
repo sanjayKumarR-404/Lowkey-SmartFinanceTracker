@@ -1,0 +1,210 @@
+/* Import variable fonts from local fontsource packages */
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/fraunces';
+
+/* ==========================================================================
+   LOWKEY DESIGN SYSTEM — DESIGN TOKENS
+   Calm, warm, disciplined palette inspired by quality stationery.
+   ========================================================================== */
+
+:root {
+  /* Colors - Light Theme (Default) */
+  --bg-canvas: #F7F5F0;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #FAFAF7;
+  --bg-surface-active: #F3EFE6;
+  --bg-sidebar: #F2EFE8;
+  
+  --border: #E8E4DA;
+  --border-focus: #1F5A46;
+  --border-subtle: #EFECE4;
+
+  --primary: #1F5A46;
+  --primary-hover: #174636;
+  --primary-soft: #EBF2EE;
+  --primary-contrast: #FFFFFF;
+
+  --accent: #E3A23B;
+  --accent-soft: #FCF6EC;
+
+  --text-main: #1B1F1D;
+  --text-muted: #5C6661;
+  --text-subtle: #8A948F;
+
+  --income: #2D7A58;
+  --income-soft: #EBF5F0;
+  --expense: #C4553B;
+  --expense-soft: #FAF0ED;
+
+  /* Category Palette (Muted Earthy) */
+  --cat-food: #8E5B42;
+  --cat-housing: #3C6E71;
+  --cat-shopping: #7D6587;
+  --cat-transport: #4F7359;
+  --cat-entertainment: #A3704C;
+  --cat-health: #5B7B88;
+  --cat-salary: #2D7A58;
+  --cat-other: #727A75;
+
+  /* Typography */
+  --font-body: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Fraunces Variable', Georgia, serif;
+
+  /* Geometry & Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Spacing Grid (8px baseline) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px rgba(27, 31, 29, 0.04);
+  --shadow-card: 0 1px 3px rgba(27, 31, 29, 0.04), 0 4px 12px rgba(27, 31, 29, 0.02);
+  --shadow-card-hover: 0 4px 14px rgba(27, 31, 29, 0.07), 0 8px 24px rgba(27, 31, 29, 0.03);
+  --shadow-modal: 0 12px 36px rgba(27, 31, 29, 0.12), 0 4px 12px rgba(27, 31, 29, 0.06);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+}
+
+/* ==========================================================================
+   DARK THEME (Deep charcoal-green)
+   ========================================================================== */
+
+[data-theme="dark"] {
+  --bg-canvas: #121715;
+  --bg-surface: #19201D;
+  --bg-surface-hover: #1E2723;
+  --bg-surface-active: #242E2A;
+  --bg-sidebar: #151C19;
+
+  --border: #26322C;
+  --border-focus: #468B71;
+  --border-subtle: #1D2622;
+
+  --primary: #37886C;
+  --primary-hover: #429C7D;
+  --primary-soft: #192A22;
+  --primary-contrast: #FFFFFF;
+
+  --accent: #E5A84B;
+  --accent-soft: #2E2619;
+
+  --text-main: #ECF0ED;
+  --text-muted: #97A39D;
+  --text-subtle: #6B7872;
+
+  --income: #3FA87E;
+  --income-soft: #182B22;
+  --expense: #DE6B52;
+  --expense-soft: #301F1B;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* ==========================================================================
+   CSS RESET & BASE STYLES
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-main);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+h1 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem; /* 28px */
+}
+
+h2 {
+  font-size: 1.25rem; /* 20px */
+}
+
+h3 {
+  font-size: 1rem; /* 16px */
+}
+
+p, span, label, input, button, textarea, select {
+  font-family: var(--font-body);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+}
+
+input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Tabular figures for numbers in tables and stats */
+.tabular-numbers {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Prefers-reduced-motion: disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
