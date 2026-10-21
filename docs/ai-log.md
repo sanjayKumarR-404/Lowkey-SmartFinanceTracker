@@ -14,5 +14,3 @@ What I checked or changed: for example, “Read the plan before approving. Check
 
 ## Entry 2
 Date: 21-10-2026
-What the AI did: for example, “Created the Express server, the database connection, a health route, and error handling. Installed the packages.”
-What I checked or changed: for example, “Read the plan before approving. Made my own .env file and added my own database link and secret. Tested the health route in the browser and saw MongoDB connected.”

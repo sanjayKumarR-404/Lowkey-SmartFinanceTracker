@@ -17,6 +17,7 @@ const morgan = require('morgan');
 
 const connectDB = require('./config/db');
 const healthRoutes = require('./routes/healthRoutes');
+const authRoutes = require('./routes/authRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -42,6 +43,7 @@ app.use(express.json());
 // --- Routes ---
 // All our routes are prefixed with /api to keep things organised
 app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRoutes);   // register, login, getMe
 
 // --- Error Handling ---
 // notFound must come AFTER all routes — it catches anything that didn't match
